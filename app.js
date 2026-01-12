@@ -242,7 +242,7 @@ async function init() {
 
   $("recordTodayBtn").onclick = async () => {
     const entries = parseEntries($("todayInput").value);
-    if (!entries.length) return toast("入力が空やで");
+    if (!entries.length) return toast("入力が空です");
     const overwrite = $("overwriteTitle").checked;
 
     for (const it of entries) {
@@ -266,7 +266,7 @@ async function init() {
     }
 
     $("todayInput").value = "";
-    toast("記録したで");
+    toast("記録しました");
     await refreshAll();
   };
 
@@ -278,8 +278,8 @@ async function init() {
     const overwrite = $("overwriteTitle2").checked;
     const rnoInput = $("unitReviewNo").value;
 
-    if (!UNIT_RE.test(code)) return alert("単元コードは 1-1 形式（数字-数字）やで");
-    if (!doneDate) return alert("学習日を入れてな");
+    if (!UNIT_RE.test(code)) return alert("単元コードは 1-1 形式（数字-数字）です");
+    if (!doneDate) return alert("学習日を入れてください");
 
     const unitId = await getOrCreateUnit(db, Number(currentSubjectId), code);
 
@@ -292,10 +292,10 @@ async function init() {
     let reviewNo = null;
     if (rnoInput) {
       reviewNo = Number(rnoInput);
-      if (!Number.isInteger(reviewNo) || reviewNo <= 0) return alert("回数は正の整数やで");
+      if (!Number.isInteger(reviewNo) || reviewNo <= 0) return alert("回数は正の整数です");
       // 回数重複チェック
       const revs = await listReviewsByUnit(db, unitId);
-      if (revs.some(r=>r.reviewNo===reviewNo)) return alert(`回数 ${reviewNo} は既にあるで（編集か再採番してな）`);
+      if (revs.some(r=>r.reviewNo===reviewNo)) return alert(`回数 ${reviewNo} は既にあります。編集か再採番をしてください。`);
     } else {
       reviewNo = await getNextReviewNo(db, unitId);
     }
@@ -303,7 +303,7 @@ async function init() {
     try {
       await insertReview(db, unitId, reviewNo, doneDate);
     } catch(e) {
-      return alert("同じ学習日/回数が既にあるっぽいで（重複防止）");
+      return alert("同じ学習日/回数が既にあるようです");
     }
 
     selectedUnitId = unitId;
@@ -312,8 +312,8 @@ async function init() {
   };
 
   $("deleteUnitBtn").onclick = async () => {
-    if (!selectedUnitId) return alert("削除する単元を一覧から選んでな");
-    if (!confirm("この単元を削除（履歴も全部削除）してええ？")) return;
+    if (!selectedUnitId) return alert("削除する単元を一覧から選んでください");
+    if (!confirm("この単元を削除（履歴も全部削除）していいですか？")) return;
     await deleteUnit(db, selectedUnitId);
     selectedUnitId = null;
     selectedReviewId = null;
@@ -321,35 +321,35 @@ async function init() {
   };
 
   $("updateReviewBtn").onclick = async () => {
-    if (!selectedUnitId || !selectedReviewId) return alert("編集する履歴を選んでな");
+    if (!selectedUnitId || !selectedReviewId) return alert("編集する履歴を選んでください");
     const newNo = Number($("editReviewNo").value);
     const newDate = $("editReviewDate").value;
-    if (!Number.isInteger(newNo) || newNo <= 0) return alert("回数は正の整数やで");
-    if (!newDate) return alert("学習日を入れてな");
+    if (!Number.isInteger(newNo) || newNo <= 0) return alert("回数は正の整数です");
+    if (!newDate) return alert("学習日を入れてください");
 
     const revs = await listReviewsByUnit(db, selectedUnitId);
-    if (revs.some(r=>r.id!==selectedReviewId && r.reviewNo===newNo)) return alert(`回数 ${newNo} が既にあるで`);
-    if (revs.some(r=>r.id!==selectedReviewId && r.doneDate===newDate)) return alert(`学習日 ${newDate} が既にあるで`);
+    if (revs.some(r=>r.id!==selectedReviewId && r.reviewNo===newNo)) return alert(`回数 ${newNo} が既にあります`);
+    if (revs.some(r=>r.id!==selectedReviewId && r.doneDate===newDate)) return alert(`学習日 ${newDate} が既にあります`);
 
     await updateReview(db, selectedReviewId, selectedUnitId, newNo, newDate);
-    toast("編集したで");
+    toast("編集しました");
     await refreshAll();
   };
 
   $("deleteReviewBtn").onclick = async () => {
-    if (!selectedReviewId) return alert("削除する履歴を選んでな");
-    if (!confirm("この復習履歴を削除してええ？")) return;
+    if (!selectedReviewId) return alert("削除する履歴を選んでください");
+    if (!confirm("この復習履歴を削除してもいいですか？")) return;
     await deleteReview(db, selectedReviewId);
     selectedReviewId = null;
-    toast("削除したで");
+    toast("削除しました");
     await refreshAll();
   };
 
   $("renumberBtn").onclick = async () => {
-    if (!selectedUnitId) return alert("再採番する単元を選んでな");
-    if (!confirm("この単元の履歴を日付順に1..nへ再採番してええ？")) return;
+    if (!selectedUnitId) return alert("再採番する単元を選んでください");
+    if (!confirm("この単元の履歴を日付順に1..nへ再採番していいですか？")) return;
     await renumberReviews(db, selectedUnitId);
-    toast("再採番したで");
+    toast("再採番しました");
     await refreshAll();
   };
 
@@ -371,7 +371,7 @@ async function init() {
     const text = await file.text();
     try {
       const data = JSON.parse(text);
-      if (!confirm("インポートします。この端末のデータは上書きされます。ええ？")) return;
+      if (!confirm("インポートします。この端末のデータは上書きされます。よろしいですか？")) return;
       await importJsonOverwrite(db, data);
       toast("インポート完了");
       selectedUnitId = null;
@@ -385,13 +385,13 @@ async function init() {
   };
 
   $("wipeBtn").onclick = async () => {
-    if (!confirm("この端末のデータを全消去するで。ほんまにええ？")) return;
+    if (!confirm("この端末のデータを全消去します。よろしいですか？")) return;
     await clearAll(db);
     await seedDefaultSubjects(db);
     selectedUnitId = null;
     selectedReviewId = null;
     await refreshSubjects();
-    toast("全消去したで");
+    toast("全消去しました");
   };
 }
 
